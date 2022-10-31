@@ -5,10 +5,8 @@ import axios from "axios";
 import { API_URL } from "../../helper";
 import 'react-toastify/dist/ReactToastify.css';
 import { AiFillEdit, AiFillDelete, AiFillCloseCircle } from "react-icons/ai";
-import { ToastContainer, toast } from 'react-toastify';
 import ModalDetailProduct from "../../components/ModalDetailProduct";
 import ModalDeleteProduct from "../../components/ModalDeleteProduct";
-import DashboardPage from "./DashboardPage";
 import AdminComponent from "../../components/AdminComponent";
 import { useLocation, useNavigate } from "react-router";
 import { Helmet } from "react-helmet";
@@ -21,19 +19,42 @@ const ProductAdminPage = (props) => {
     const [drop, setDrop] = React.useState(true);
     const [defaultSort, setDefaultSort] = React.useState('Urutkan');
     const [defaultFilterCategory, setDefaultFilterCategory] = React.useState('Kategori');
-    const [offset, setOffset] = React.useState(0);
     const [sort, setSort] = React.useState('');
     const [category, setCategory] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
-    const [idactive, setIdactive] = React.useState(1);
     const [categoryChecked, setCategoryChecked] = React.useState([]);
     const [dataStock, setDataStock] = React.useState([]);
 
     // const [filterName, setFilterName] = React.useState('');
     const { state, search } = useLocation();
     let id = search.split('=');
-    const [filterNameOn, setFilterNameOn] = React.useState(false);
-    const [filterName, setFilterName] = React.useState(typeof id[id.length - 1] == typeof 'string' ? id[id.length - 1] : '');
+    // console.log('ini id', id)
+    // console.log('ini id[id.length - 1]', id[id.length - 1])
+    // console.log('id[id.length - 1].length', id[id.length - 1].length)
+
+
+    const [filterName, setFilterName] = React.useState(id[id.length - 1].length > 1 ? id[id.length - 1] : '');
+    // console.log('ini filterName', filterName)
+
+    const [filterNameOn, setFilterNameOn] = React.useState(filterName ? true : false);
+    // const [filterName, setFilterName] = React.useState(typeof id[id.length - 1] == typeof 'string' ? id[id.length - 1] : '');
+
+    // console.log('ini id', id[id.length - 1])
+    // console.log('ini typeof id', typeof id[id.length - 1])
+    // const [idactive, setIdactive] = React.useState(typeof id[id.length - 1] == typeof 1 ? id[id.length - 1] : 1);
+    
+    // const [idactive, setIdactive] = React.useState(id[id.length - 1].length == 1 ? id[id.length - 1] : 1);
+    const [idactive, setIdactive] = React.useState(search.includes('&') ? id[1].charAt(0) : 1);
+
+    // console.log('ini idactive', idactive)
+    // console.log('ini Boolean(idactive>1)', Boolean(idactive>1))
+
+
+    // const [offset, setOffset] = React.useState(0);
+    // const [offset, setOffset] = React.useState(typeof id[id.length - 1] == typeof 1 ? 10 * ((id[id.length - 1]) - 1) : 0);
+    const [offset, setOffset] = React.useState(idactive > 1 ? (10 * (idactive - 1)) : 0);
+
+    // const [offset, setOffset] = React.useState(id[id.length - 1].length == 1 ? 10 * ((id[id.length - 1]) - 1) : 0);
     const [pagination, setPagination] = React.useState([1, 2, 3, 4, 5]);
     const [totalProduct, setTotalProduct] = React.useState('');
     const [totalProductFilter, setTotalProductFilter] = React.useState('');
@@ -44,8 +65,20 @@ const ProductAdminPage = (props) => {
     const [idproduct, setIdproduct] = React.useState('');
     const [nameDeleted, setNameDeleted] = React.useState('');
     const [dataproduct, setDataproduct] = React.useState('');
+    const [productChecked, setProductChecked] = React.useState([]);
+    const [allChecked, setAllChecked] = React.useState(false);
+    const [totalChecked, setTotalChecked] = React.useState('');
+    // const [doc, setDoc] = React.useState(allChecked ? document.getElementById(`selectall`).checked = true : document.getElementById(`selectall`).checked = false);
 
     const getProduct = () => {
+        // let newID = '';
+
+        // if (search.includes('&')) {
+        //     let a = search.split('&');
+        //     let b = a[0].split('=');
+        //     newID = b[b.length - 1];
+        //     setIdactive(newID);
+        // }
 
         if (categoryChecked.length > 0) {
             setDefaultFilterCategory(categoryChecked.length + ' kategori terpilih')
@@ -83,29 +116,31 @@ const ProductAdminPage = (props) => {
             offset
         })
             .then((res) => {
-                setData(res.data.results);
-                setTotalProduct(res.data.totalProduct);
-                setDataStock(res.data.dataStock);
+                if (res.data.results) {
+                    setData(res.data.results);
+                    setTotalProduct(res.data.totalProduct);
+                    setDataStock(res.data.dataStock);
 
-                if (res.data.totalProductFilter) {
-                    setTotalProductFilter(res.data.totalProductFilter);
+                    if (res.data.totalProductFilter) {
+                        setTotalProductFilter(res.data.totalProductFilter);
 
-                    let pagination = []
+                        let pagination = []
 
-                    for (let i = 1; i <= Math.ceil(res.data.totalProductFilter / 10); i++) {
-                        pagination.push(i)
+                        for (let i = 1; i <= Math.ceil(res.data.totalProductFilter / 10); i++) {
+                            pagination.push(i)
+                        }
+
+                        setPagination(pagination);
+
+                    } else {
+                        let pagination = []
+
+                        for (let i = 1; i <= Math.ceil(res.data.totalProduct / 10); i++) {
+                            pagination.push(i)
+                        }
+
+                        setPagination(pagination);
                     }
-
-                    setPagination(pagination);
-
-                } else {
-                    let pagination = []
-
-                    for (let i = 1; i <= Math.ceil(res.data.totalProduct / 10); i++) {
-                        pagination.push(i)
-                    }
-
-                    setPagination(pagination);
                 }
 
 
@@ -123,12 +158,38 @@ const ProductAdminPage = (props) => {
         }
     }, [loading, categoryChecked])
 
+    const onDelete = (val) => {
+        if (val.idproduct) {
+            setModalDeleteOn(true);
+            setIdproduct([val.idproduct]);
+            setNameDeleted(val.product_name);
+        } else {
+            // alert('yoi');
+            setModalDeleteOn(true);
+            let resultID = [];
+            let resultName = [];
+
+            productChecked.forEach((val, idx) => {
+                data.forEach((value, index) => {
+                    if (value.idproduct == val) {
+                        resultID.push(value.idproduct);
+                        resultName.push(value.product_name);
+                    }
+                })
+            })
+
+            setIdproduct(resultID);
+            setNameDeleted(resultName);
+
+        }
+    }
+
     const printProduct = () => {
         return data.map((val, idx) => {
             if (loading) {
                 return <tr key={val.idproduct} className="bg-white border-b hover:bg-gray-50">
                     <td className="py-4 px-6">
-                        <input type="checkbox" className="checked:bg-btn-500 rounded border-gray-300 focus:ring-btn-500" />
+                        <input id={`selectproduct-${val.idproduct}`} onClick={() => checkedProduct(val.idproduct)} type="checkbox" className="checked:bg-btn-500 rounded border-gray-300 focus:ring-btn-500" />
                     </td>
                     <th scope="row" className="w-96 py-4 px-6 font-bold text-gray-900 whitespace-nowrap flex items-center">
                         {
@@ -184,7 +245,7 @@ const ProductAdminPage = (props) => {
                         }} className="w-8 border border-btn-500 text-btn-500 rounded-md py-1 font-bold">
                             {<AiFillEdit size={16} className="mx-2" />}
                         </button>
-                        <button type="button" onClick={() => { setModalDeleteOn(true); setIdproduct(val.idproduct); setNameDeleted(val.product_name) }} className="ml-3 w-8 bg-btn-500 text-white rounded-md py-1 font-bold">
+                        <button type="button" onClick={() => onDelete(val)} className="ml-3 w-8 bg-btn-500 text-white rounded-md py-1 font-bold">
                             {<AiFillDelete size={16} className="mx-2" />}
                         </button>
                     </td>
@@ -228,13 +289,37 @@ const ProductAdminPage = (props) => {
         })
     }
 
+    const onPagination = (idx) => {
+        setLoading(false);
+        setIdactive(idx + 1);
+        setOffset(10 * idx);
+
+        if (!filterName) {
+            setFilterName('');
+        }
+
+        if (idx + 1 != 1) {
+            if (filterName) {
+                navigate(`/admin/product?page=${idx + 1}&search=${filterName}`)
+            } else {
+                navigate(`/admin/product?page=${idx + 1}`)
+            }
+        } else {
+            if(!filterName){
+                navigate(`/admin/product`)
+            } else {
+                navigate(`/admin/product?search=${filterName}`)
+            }
+        }
+    }
+
     const printPagination = () => {
         return pagination.map((val, idx) => {
             return <li>
-                <button type="button" onClick={() => { setLoading(false); setFilterName(''); setIdactive(idx + 1); setOffset(10 * idx) }} aria-current="page"
-                    className={(idx + 1) == idactive ? 
-                    "z-10 py-2 px-3 leading-tight text-btn-500 bg-green-50 border border-green-300 hover:bg-green-100 hover:text-btn-500" 
-                    : "py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"}>
+                <button type="button" onClick={() => onPagination(idx)} aria-current="page"
+                    className={(idx + 1) == idactive ?
+                        "z-10 py-2 px-3 leading-tight text-btn-500 bg-green-50 border border-green-300 hover:bg-green-100 hover:text-btn-500"
+                        : "py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"}>
                     {/* <button type="button" onClick={() => { setLoading(false); setFilterName(''); setIdactive(idx + 1); setOffset(10 * idx) }} aria-current="page" className="z-10 py-2 px-3 leading-tight text-btn-500 bg-green-50 border border-green-300 hover:bg-green-100 hover:text-btn-500"> */}
                     {idx + 1}
                 </button>
@@ -261,8 +346,29 @@ const ProductAdminPage = (props) => {
             setLoading(false)
             if (categoryChecked.length > 0) {
                 setCategoryChecked([...categoryChecked, idcategory])
+
+                // let result = [...categoryChecked, idcategory];
+                // let tes = '';
+
+                // if (result.length > 1) {
+                //     let banyakCategory = result.map((val, idx) => {
+                //         return `category=${val}`
+                //     })
+
+                //     tes = banyakCategory.join('&')
+
+                // } else if (result.length == 1) {
+
+                //     tes = `category=${result}`
+
+                // }
+
+                // navigate(`/admin/product?${tes}`)
+
             } else {
                 setCategoryChecked([idcategory])
+                // let tes = `category=${idcategory}`
+                // navigate(`/admin/product?${tes}`)
             }
         } else {
             if (categoryChecked.length > 0) {
@@ -274,6 +380,71 @@ const ProductAdminPage = (props) => {
                     }
                 })
             }
+        }
+    }
+
+    const checkedProduct = (idproduct) => {
+        if (document.getElementById(`selectproduct-${idproduct}`).checked) {
+            if (productChecked.length > 0) {
+                let checked = [...productChecked, idproduct]
+                setProductChecked([...productChecked, idproduct])
+                setTotalChecked(checked.length)
+
+                if (checked.length == data.length) {
+                    document.getElementById("selectall").checked = true
+                }
+
+            } else {
+                setProductChecked([idproduct])
+                let checked = [idproduct]
+                setTotalChecked(checked.length)
+            }
+        } else {
+            document.getElementById(`selectall`).checked = false
+
+            if (productChecked.length > 0) {
+                productChecked.forEach((val, idx) => {
+                    if (val == idproduct) {
+                        let idxAlready = productChecked.findIndex(v => v == idproduct)
+                        productChecked.splice(idxAlready, 1)
+                        setTotalChecked(productChecked.length)
+                    }
+                })
+            } else if (productChecked.length == 0) {
+                setAllChecked(false);
+            }
+        }
+    }
+
+    const checkedAllProduct = () => {
+        if (document.getElementById('selectall').checked) {
+            setAllChecked(true);
+            setTotalChecked(data.length);
+
+            let checked = []
+
+            data.forEach((val, idx) => {
+                document.getElementById(`selectproduct-${val.idproduct}`).checked = true
+                checked.push(val.idproduct);
+                setProductChecked(checked);
+
+            })
+
+        } else {
+            setAllChecked(false);
+
+            data.map((val, idx) => {
+                document.getElementById(`selectproduct-${val.idproduct}`).checked = false
+
+                if (productChecked.length > 0) {
+                    productChecked.forEach((value, index) => {
+                        if (value == val.idproduct) {
+                            let idxAlready = productChecked.findIndex(v => v == val.idproduct)
+                            productChecked.splice(idxAlready, 1)
+                        }
+                    })
+                }
+            })
         }
     }
 
@@ -302,6 +473,12 @@ const ProductAdminPage = (props) => {
         }
     }
 
+    const onClose = (info) => {
+        if (info == "false") {
+            document.getElementById(`selectall`).checked = false
+        }
+    }
+
     const onReset = () => {
         setCategoryChecked([]);
         setTotalProductFilter('');
@@ -324,6 +501,14 @@ const ProductAdminPage = (props) => {
 
         navigate('/admin/product');
 
+    }
+
+    const onSearch = () => {
+        setLoading(false);
+        document.getElementById("search").value = null;
+        navigate(`/admin/product?search=${filterName}`);
+        setFilterNameOn(true)
+        setOffset(0);
     }
 
     return (
@@ -349,7 +534,7 @@ const ProductAdminPage = (props) => {
                                             {/* <input id="search" type="form" onChange={(e) => setFilterName(`product_name=${e.target.value}`)} placeholder="Cari nama obat" className="border rounded-lg py-1 px-2 text-sm w-80" /> */}
 
                                             <input id="search" type="form" onChange={(e) => setFilterName(e.target.value)} placeholder="Cari nama obat" className="border rounded-lg py-1 px-2 text-sm w-80" />
-                                            <button type="button" onClick={() => { setLoading(false); document.getElementById("search").value = null; navigate(`/admin/product?search=${filterName}`); setFilterNameOn(true) }} className="absolute right-0 p-1.5 rounded-r-lg text-gray-400">
+                                            <button type="button" onClick={onSearch} className="absolute right-0 p-1.5 rounded-r-lg text-gray-400">
                                                 <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                             </button>
                                         </div>
@@ -416,7 +601,7 @@ const ProductAdminPage = (props) => {
                                                         </>
                                                 }
                                                 {
-                                                    filterName ?
+                                                    filterNameOn ?
                                                         <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
                                                             {filterName}
                                                             <AiFillCloseCircle onClick={() => { setFilterName(''); setLoading(false); setFilterNameOn(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
@@ -442,9 +627,46 @@ const ProductAdminPage = (props) => {
                                                 <thead className="text-xs text-gray-600 uppercase border-b border-t">
                                                     <tr>
                                                         <th scope="col" className="py-3 px-6">
-                                                            <input type="checkbox" className="checked:bg-btn-500 rounded border-gray-300 focus:ring-btn-500" />
+                                                            <input id="selectall" onClick={checkedAllProduct} type="checkbox" className="checked:bg-btn-500 rounded border-gray-300 focus:ring-btn-500" />
                                                         </th>
-                                                        <th scope="col" className="py-3 pl-6 w-96">
+                                                        {
+                                                            allChecked || productChecked.length > 0 ?
+                                                                <>
+                                                                    <th scope="col" className="py-3 pl-6 w-96 flex items-center lowercase">
+                                                                        <p className="font-bold mx-2">
+                                                                            {totalChecked} / {data.length} produk dipilih
+                                                                        </p>
+                                                                        <button className="font-bold mx-2">
+                                                                            {<AiFillDelete onClick={() => onDelete(productChecked)} size={16} className="mx-2" />}
+                                                                        </button>
+                                                                    </th>
+                                                                </>
+                                                                :
+                                                                <>
+                                                                    <th scope="col" className="py-3 pl-6 w-96">
+                                                                        Nama Obat
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 border border-x-1 text-center">
+                                                                        Kategori
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 border border-x-1 text-center">
+                                                                        Harga
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 border border-x-1 text-center">
+                                                                        Stok Utama
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 border border-x-1 text-center">
+                                                                        Stok Netto
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 border border-x-1 text-center">
+                                                                        Total Stok
+                                                                    </th>
+                                                                    <th scope="col" className="py-3 px-3 text-center">
+                                                                        Atur
+                                                                    </th>
+                                                                </>
+                                                        }
+                                                        {/* <th scope="col" className="py-3 pl-6 w-96">
                                                             Nama Obat
                                                         </th>
                                                         <th scope="col" className="py-3 px-3 border border-x-1 text-center">
@@ -464,7 +686,7 @@ const ProductAdminPage = (props) => {
                                                         </th>
                                                         <th scope="col" className="py-3 px-3 text-center">
                                                             Atur
-                                                        </th>
+                                                        </th> */}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -512,20 +734,9 @@ const ProductAdminPage = (props) => {
 
                             </div>
                         </div>
-                        <ToastContainer
-                            position="bottom-center"
-                            autoClose={2000}
-                            hideProgressBar
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                        />
 
                         {modalDetailProductOn && <ModalDetailProduct setModalDetailProductOn={setModalDetailProductOn} dataproduct={dataproduct} setLoading={setLoading} />}
-                        {modalDeleteOn && <ModalDeleteProduct setModalDeleteOn={setModalDeleteOn} idproduct={idproduct} nameDeleted={nameDeleted} setLoading={setLoading} />}
+                        {modalDeleteOn && <ModalDeleteProduct setModalDeleteOn={setModalDeleteOn} idproduct={idproduct} nameDeleted={nameDeleted} setLoading={setLoading} setAllChecked={setAllChecked} setProductChecked={setProductChecked} onClose={onClose} />}
                     </div>
                 </div>
             </div>

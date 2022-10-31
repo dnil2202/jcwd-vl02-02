@@ -4,32 +4,45 @@ import { API_URL } from "../helper";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AiFillEdit, AiFillDelete, AiFillPlusCircle, AiOutlineClose } from "react-icons/ai";
+import SpinnerComp from "./Spinner";
+import ModalDeleteCategory from "./ModalDeleteCategory";
 
 const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
 
     const [id, setId] = React.useState('');
     const [newCategory, setNewCategory] = React.useState('');
     const [addCat, setAddCat] = React.useState('');
+    const [spinner, setSpinner] = React.useState(false);
+    const [spinnerDelete, setSpinnerDelete] = React.useState(false);
+    const [modalDeleteCategoryOn, setModalDeleteCategoryOn] = React.useState(false);
+    const [deletedID, setDeletedID] = React.useState('');
+    const [deletedName, setDeletedName] = React.useState('');
+
 
     const handleCancelClick = () => {
         setModalSetCategoryOn(false)
     }
 
     const onEdit = () => {
+        setSpinner(true);
         axios.patch(API_URL + `/api/product/editcategory/${id}`, {
             category_name: newCategory
         })
             .then((res) => {
-                toast.success('Edit category berhasil', {
-                    position: "bottom-center",
-                    autoClose: 2000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                })
-                setId(null)
+                setTimeout(() => {
+                    toast.success('Edit category berhasil', {
+                        position: "bottom-center",
+                        autoClose: 2000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    })
+                    setId(null);
+                    setSpinner(false);
+                }, 3000);
+
             })
             .catch((error) => {
                 toast.error('Edit category gagal', {
@@ -52,10 +65,23 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                 {id == val.idcategory ?
                     <div className="mb-3 flex">
                         <input id="search" onChange={(e) => setNewCategory(e.target.value)} type="form" defaultValue={val.category_name} className="border rounded-lg py-1 px-2 text-sm w-full" />
-                        <button type="button" onClick={onEdit} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                        {
+                            newCategory ?
+                                !spinner ?
+                                    <button type="button" onClick={onEdit} className="ml-2 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                                        Save
+                                    </button>
+                                    :
+                                    <SpinnerComp width="40px" height={"30px"} />
+                                :
+                                <button type="button" disabled className="ml-2 text-xs px-1.5 bg-btn-500 bg-opacity-80 cursor-not-allowed text-white rounded-md py-1 font-bold">
+                                    Save
+                                </button>
+                        }
+                        {/* <button type="button" onClick={onEdit} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
                             Save
-                        </button>
-                        <button type="button" onClick={() => setId('')} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                        </button> */}
+                        <button type="button" onClick={() => { setId(''); setNewCategory('') }} className="ml-1 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
                             Cancel
                         </button>
                     </div>
@@ -66,9 +92,14 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                             <button type="button" onClick={() => setId(val.idcategory)} className="w-8 border border-btn-500 text-btn-500 rounded-md py-1 font-bold">
                                 {<AiFillEdit size={16} className="mx-2" />}
                             </button>
+                            {/* {
+                                !spinnerDelete ? */}
                             <button type="button" className="ml-3 w-8 bg-btn-500 text-white rounded-md py-1 font-bold">
-                                {<AiFillDelete onClick={()=>onDelete(val.idcategory)} size={16} className="mx-2" />}
+                                {<AiFillDelete onClick={() => onDelete(val.idcategory, val.category_name)} size={16} className="mx-2" />}
                             </button>
+                            {/* :
+                                    <SpinnerComp width="32px" height={"24px"}/>
+                            } */}
                         </div>
                     </div>
                 }
@@ -78,11 +109,13 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
     }
 
     const onAdd = () => {
+        // setSpinner(true);
         axios.post(API_URL + `/api/product/addcategory`, {
             category_name: newCategory
         })
             .then((res) => {
                 if (res.data.message) {
+                    // setTimeout(() => {
                     toast.success('Add category berhasil', {
                         position: "bottom-center",
                         autoClose: 2000,
@@ -92,7 +125,9 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                         draggable: true,
                         progress: undefined,
                     })
-                    setAddCat('')
+                    setAddCat('');
+                    // setSpinner(false);
+                    // }, 3000);
                 } else {
                     toast.error('Add category gagal, category sudah tersedia', {
                         position: "bottom-center",
@@ -111,33 +146,41 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
             })
     }
 
-    const onDelete = (idcategory) => {
-        axios.delete(API_URL+`/api/product/deletecategory/${idcategory}`)
-        .then((res)=>{
-            if(res.data.message){
-                toast.success('Delete category berhasil', {
-                    position: "bottom-center",
-                    autoClose: 2000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                })
-            } 
-        })
-        .catch((error)=>{
-            console.log('on delete product gagal :', error)
-            toast.error('Delete category gagal', {
-                position: "bottom-center",
-                autoClose: 2000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            })
-        })
+    const onDelete = (idcategory, category_name) => {
+        // setSpinnerDelete(true);
+        setModalDeleteCategoryOn(true);
+        setDeletedID(idcategory);
+        setDeletedName(category_name);
+
+        // axios.delete(API_URL + `/api/product/deletecategory/${idcategory}`)
+        //     .then((res) => {
+        //         if (res.data.message) {
+        //             setTimeout(() => {
+        //                 toast.success('Delete category berhasil', {
+        //                     position: "bottom-center",
+        //                     autoClose: 2000,
+        //                     hideProgressBar: true,
+        //                     closeOnClick: true,
+        //                     pauseOnHover: true,
+        //                     draggable: true,
+        //                     progress: undefined,
+        //                 })
+        //                 // setSpinnerDelete(false);
+        //             }, 3000);
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.log('on delete product gagal :', error)
+        //         toast.error('Delete category gagal', {
+        //             position: "bottom-center",
+        //             autoClose: 2000,
+        //             hideProgressBar: true,
+        //             closeOnClick: true,
+        //             pauseOnHover: true,
+        //             draggable: true,
+        //             progress: undefined,
+        //         })
+        //     })
     }
 
     return (
@@ -152,8 +195,8 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                             <div className="flex text-center mb-1">
                                 <h3 className="text-xl font-medium text-gray-900">Setting category
                                     <button className="text-white bg-btn-500 ml-2 rounded-lg">
-                                        <AiFillPlusCircle onClick={()=>setAddCat(true)} size={16} />
-                                        </button></h3>
+                                        <AiFillPlusCircle onClick={() => setAddCat(true)} size={16} />
+                                    </button></h3>
                             </div>
                             <div>
                                 <button onClick={handleCancelClick} className='text-gray-500'><AiOutlineClose size={16} /></button>
@@ -167,10 +210,23 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                             addCat ?
                                 <div className="mb-3 flex">
                                     <input id="search" onChange={(e) => setNewCategory(e.target.value)} type="form" placeholder="Input new category here" className="border rounded-lg py-1 px-2 text-sm w-full" />
-                                    <button type="button" onClick={onAdd} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                                    {
+                                        newCategory ?
+                                            // !spinner ?
+                                            <button type="button" onClick={onAdd} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                                                Save
+                                            </button>
+                                            // :
+                                            // <SpinnerComp width="40px" height={"30px"} />
+                                            :
+                                            <button type="button" disabled className="ml-3 text-xs cursor-not-allowed px-1.5 bg-opacity-80 bg-btn-500 text-white rounded-md py-1 font-bold">
+                                                Save
+                                            </button>
+                                    }
+                                    {/* <button type="button" onClick={onAdd} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
                                         Save
-                                    </button>
-                                    <button type="button" onClick={() => setAddCat('')} className="ml-3 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
+                                    </button> */}
+                                    <button type="button" onClick={() => { setAddCat(''); setNewCategory('') }} className="ml-1 text-xs px-1.5 bg-btn-500 text-white rounded-md py-1 font-bold">
                                         Cancel
                                     </button>
                                 </div>
@@ -184,6 +240,7 @@ const ModalSettingCategory = ({ setModalSetCategoryOn, category }) => {
                         </div> */}
                     </div>
                 </div>
+                {modalDeleteCategoryOn && <ModalDeleteCategory setModalDeleteCategoryOn={setModalDeleteCategoryOn} idcategory={deletedID} category_name={deletedName} />}
             </div>
         </div>
     );

@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from "react-helmet";
 
 const ProductPage = (props) => {
+
     const [data, setData] = React.useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     const [query, setQuery] = React.useState(10);
     const [category, setCategory] = React.useState([]);
@@ -20,12 +21,14 @@ const ProductPage = (props) => {
 
     const { state, search } = useLocation();    //perlu idcategory dari daniel
     let id = search.split('=');
-    const [filterName, setFilterName] = React.useState(typeof id[id.length - 1] == typeof 'string' ? id[id.length - 1] : '');
-    const [idPage, setIdPage] = React.useState(typeof id[id.length - 1] == typeof 3 ? id[id.length - 1] : undefined);
+    const [filterName, setFilterName] = React.useState(id[id.length - 1].length > 1 ? id[id.length - 1] : '');
+    const [idPage, setIdPage] = React.useState(search.includes('&') ? id[1].charAt(0) : undefined);
     const [defaultSort, setDefaultSort] = React.useState('Paling Sesuai');
-    const [filterNameOn, setFilterNameOn] = React.useState(false);
+    const [filterNameOn, setFilterNameOn] = React.useState(filterName ? true : false);
 
     const [loading, setLoading] = React.useState(false);
+    const [totalProduct, setTotalProduct] = React.useState('');
+    const [totalProductFilter, setTotalProductFilter] = React.useState('');
 
     const dispatch = useDispatch();
 
@@ -39,19 +42,19 @@ const ProductPage = (props) => {
 
     const getProduct = () => {
         let filter = '';
-        let newID = '';
+        // let newID = '';
 
-        if (search.includes('&')) {
-            let a = search.split('&');
-            let b = a[0].split('=');
-            newID = b[b.length - 1];
-            setIdPage(newID);
-        }
+        // if (search.includes('&')) {
+        //     let a = search.split('&');
+        //     let b = a[0].split('=');
+        //     newID = b[b.length - 1];
+        //     setIdPage(newID);
+        // }
 
-        if ((idPage || newID) && filterName) {
-            filter = `category_id=${idPage || newID}&product_name=${filterName}`
-        } else if (idPage || newID) {
-            filter = `category_id=${idPage || newID}`
+        if (idPage && filterName) {
+            filter = `category_id=${idPage}&product_name=${filterName}`
+        } else if (idPage) {
+            filter = `category_id=${idPage}`
         } else {
             filter = `product_name=${filterName}`
         }
@@ -64,6 +67,11 @@ const ProductPage = (props) => {
             .then((res) => {
                 console.log(res.data.results)
                 setData(res.data.results)
+                setTotalProduct(res.data.totalProduct);
+
+                if (res.data.totalProductFilter) {
+                    setTotalProductFilter(res.data.totalProductFilter);
+                } 
             })
             .catch((error) => {
                 console.log('getProduct error :', error)
@@ -488,72 +496,72 @@ const ProductPage = (props) => {
                                     </ul>
                                 </div>
                             </div>
-
-                            {/* Desktop sort */}
-                            <div className="hidden md:flex justify-between items-center">
-                                <p className="text-2xl font-bold mt-5 mb-3 text-txt-500">OBAT</p>
-                                <div className="flex items-center">
-                                    <p className="text-sm text-cyan-900 mr-2">Urutkan: </p>
-                                    <button onClick={() => setDrop(!drop)} id="dropdownDefault" data-dropdown-toggle="dropdown" className="text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-4 h-8 mr-1 text-center inline-flex items-center" type="button">
-                                        {defaultSort}
-                                        <svg className="ml-2 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </button>
-                                    {/* <!-- Dropdown menu --> */}
-                                    <div id="dropdown" className={`${drop == true ? 'hidden' : ''} z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700`} style={{ position: "absolute", inset: "115px auto auto 1180px" }}>
-                                        <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefault">
-                                            <li>
-                                                <button onClick={() => { setLoading(false); setDefaultSort('Paling Sesuai'); setSort(''); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Paling Sesuai</button>
-                                            </li>
-                                            <li>
-                                                <button onClick={() => { setLoading(false); setDefaultSort('Nama : A - Z'); setSort('product_name'); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Nama : A - Z</button>
-                                            </li>
-                                            <li>
-                                                <button onClick={() => { setLoading(false); setDefaultSort('Harga Terendah'); setSort('price'); setDrop(!drop) }} href="#" className="block py-2 pl-4 pr-12 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Harga Terendah</button>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
+                    {/* Desktop sort */}
+                    <div className="hidden md:flex justify-between items-center">
+                        <p className="text-2xl font-bold mt-5 mb-3 text-txt-500">OBAT</p>
+                        <div className="flex items-center">
+                            <p className="text-sm text-cyan-900 mr-2">Urutkan: </p>
+                            <button onClick={() => setDrop(!drop)} id="dropdownDefault" data-dropdown-toggle="dropdown" className="text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-4 h-8 mr-1 text-center inline-flex items-center" type="button">
+                                {defaultSort}
+                                <svg className="ml-2 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            {/* <!-- Dropdown menu --> */}
+                            <div id="dropdown" className={`${drop == true ? 'hidden' : ''} z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700`} style={{ position: "absolute", inset: "185px auto auto 1180px" }}>
+                                <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefault">
+                                    <li>
+                                        <button onClick={() => { setLoading(false); setDefaultSort('Paling Sesuai'); setSort(''); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Paling Sesuai</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => { setLoading(false); setDefaultSort('Nama : A - Z'); setSort('product_name'); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Nama : A - Z</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => { setLoading(false); setDefaultSort('Harga Terendah'); setSort('price'); setDrop(!drop) }} href="#" className="block py-2 pl-4 pr-12 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Harga Terendah</button>
+                                    </li>
+                                </ul>
                             </div>
-                            {
-                                sort || filterName ?
-                                    <>
-                                        <div className="flex my-7">
-                                            <button className="text-btn-500 font-bold text-sm mx-2" onClick={() => { onResetAllFilter(); setFilterNameOn(false) }}>Reset Semua Filter</button>
-                                            {/* <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
+                        </div>
+                    </div>
+                    {
+                        sort || filterNameOn ?
+                            <>
+                                <div className="flex my-7">
+                                    <button className="text-btn-500 font-bold text-sm mx-2" onClick={() => { onResetAllFilter(); setFilterNameOn(false) }}>Reset Semua Filter</button>
+                                    {/* <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
                                     {defaultFilterCategory}
                                     <AiFillCloseCircle size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
                                 </button> */}
-                                            {
-                                                sort ?
-                                                    <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
-                                                        {defaultSort}
-                                                        <AiFillCloseCircle onClick={() => { setSort(''); setDefaultSort('Paling Sesuai'); setLoading(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
-                                                    </button>
-                                                    :
-                                                    <>
-                                                    </>
-                                            }
-                                            {
-                                                filterName ?
-                                                    <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
-                                                        {filterName}
-                                                        <AiFillCloseCircle onClick={() => { setFilterName(''); setLoading(false); navigate('/product'); setFilterNameOn(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
-                                                    </button>
-                                                    :
-                                                    <>
-                                                    </>
-                                            }
-                                        </div>
-                                        <hr className="hidden md:flex bg-gray-200 border-0" />
-                                    </>
-                                    :
-                                    <>
-                                        <hr className="hidden md:flex bg-gray-200 border-0" />
-                                    </>
-                            }
+                                    {
+                                        sort ?
+                                            <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
+                                                {defaultSort}
+                                                <AiFillCloseCircle onClick={() => { setSort(''); setDefaultSort('Paling Sesuai'); setLoading(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
+                                            </button>
+                                            :
+                                            <>
+                                            </>
+                                    }
+                                    {
+                                        filterNameOn ?
+                                            <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
+                                                {filterName}
+                                                <AiFillCloseCircle onClick={() => { setFilterName(''); setLoading(false); navigate('/product'); setFilterNameOn(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
+                                            </button>
+                                            :
+                                            <>
+                                            </>
+                                    }
+                                </div>
+                                <hr className="hidden md:flex bg-gray-200 border-0" />
+                            </>
+                            :
+                            <>
+                                <hr className="hidden md:flex bg-gray-200 border-0" />
+                            </>
+                    }
 
+                    <hr className="hidden md:flex my-2 h-px bg-gray-200 border-0 dark:bg-gray-700" />
                             <hr className="hidden md:flex my-2 h-px bg-gray-200 border-0 dark:bg-gray-700" />
 
                             {
@@ -571,11 +579,11 @@ const ProductPage = (props) => {
                             {/* <div className="grid grid-cols-2 mr-4 md:mr-0 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 gap-2">
                         {printProduct()}
                     </div> */}
-                            <div className="mx-auto">
-                                {
-                                    data.length == 0 || data.length < query
-                                        ? <></>
-                                        : <button onClick={() => { setQuery(query + 10); setLoading(false) }} type="button" className="px-auto mt-7 mb-5 text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300
+                    <div className="mx-auto">
+                        {
+                            data.length == 0 || data.length < query || data.length == totalProductFilter
+                                ? <></>
+                                : <button onClick={() => { setQuery(query + 10); setLoading(false) }} type="button" className="px-auto mt-7 mb-5 text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300
                                 font-bold rounded-lg text-sm w-44 ml-4 px-3 py-1.5 text-center">Selanjutnya</button>
                                 }
                             </div>

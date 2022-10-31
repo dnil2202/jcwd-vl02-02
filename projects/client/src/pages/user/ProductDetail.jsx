@@ -86,7 +86,13 @@ const ProductDetail = () => {
                     <div className='py-5 divide-y divide-[#F8F8F8] md:grid md:grid-cols-3' >
                         <div className='bg-white  max-w-full max-h-[184-x] lg:px-20'>
                             <div className='w-full h-[200px] top-[100px] shadow-lg rounded-2xl mb-5'>
-                                <img src={val.picture} className='w-[206.52px] h-[159.34px] mx-auto ' />
+                                {/* <img src={val.picture} className='w-[206.52px] h-[159.34px] mx-auto ' /> */}
+                                {
+                                    val.picture.includes('http') ?
+                                        <img src={val.picture} className='w-[206.52px] h-[159.34px] mx-auto ' />
+                                        :
+                                        <img src={API_URL + val.picture} className='w-[206.52px] h-[159.34px] mx-auto ' />
+                                }
                             </div>
                             <div className='hidden mx-auto md:flex justify-start'>
                                 <button className='bg-main-500 hover:bg-main-700 focus:ring-main-500 text-white rounded-full py-[5px] w-36 h-12 font-Public text-sm leading-4'>Chat admin</button>

@@ -205,7 +205,13 @@ const ProductCategory = (props) => {
                     <Link to={`/product/detail?product_name=${val.product_name}&category_id=${val.category_id}`}>
                         <div className=''>
                             <div className='flex justify-center min-w-full h-[147px] object-none mt-2'>
-                                <img src={val.picture} alt='medcare.com' className='object-cover h-[147px]' />
+                                {/* <img src={val.picture} alt='medcare.com' className='object-cover h-[147px]' /> */}
+                                {
+                                    val.picture.includes('http') ?
+                                        <img src={val.picture} alt='medcare.com'  className='object-cover h-[147px]' />
+                                        :
+                                        <img src={API_URL + val.picture} alt='medcare.com'  className='object-cover h-[147px]' />
+                                }
                             </div>
                             <div className='py-2 h-28'>
                                 <div className='w-full h-10'>
