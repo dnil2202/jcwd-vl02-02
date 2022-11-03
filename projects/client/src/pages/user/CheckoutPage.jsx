@@ -577,6 +577,17 @@ const Checkout = (props) => {
                                                         draggable: false,
                                                         progress: undefined,
                                                     });
+                                                } else if (selectedAddress.phone_number.length < 4) {
+                                                    toast.error('Please use a valid phone number', {
+                                                        theme: "colored",
+                                                        position: "top-center",
+                                                        autoClose: 2000,
+                                                        hideProgressBar: false,
+                                                        closeOnClick: true,
+                                                        pauseOnHover: true,
+                                                        draggable: false,
+                                                        progress: undefined,
+                                                    });
                                                 } else {
                                                     setShowPaymentModal('show')
                                                 }

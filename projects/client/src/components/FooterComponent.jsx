@@ -83,20 +83,20 @@ return (
                             </div>
                         </div>
                         <div className='grid grid-rows-5 mx-auto font-normal text-sm leading-5 items-center text-txt-500'>
-                            <p className=''>Tentang Kami</p>
-                            <p>Kebijakan Privasi</p>
+                            <p className=''>About Us</p>
+                            <p>Privacy Policy</p>
                             <p>FAQ</p>
-                            <p>Syarat dan Ketentuan</p>
-                            <p>Karir</p>
+                            <p>Terms and Conditions</p>
+                            <p>Career</p>
                         </div>
                         <div className='grid grid-rows-5 mx-auto pt-3 font-normal text-sm leading-5 text-txt-500'>
                             <p>Blog</p>
-                            <p>Cara Belanja</p>
+                            <p>How To Shop</p>
                             <p>Promo</p>
                             <p>Diagnosis</p>
                         </div>
                         <div className='grid grid-rows-4 mx-auto pt-1 '>
-                            <p className='text-2xl font-bold leading-7 text-txt-500'>Ikuti Kami</p>
+                            <p className='text-2xl font-bold leading-7 text-txt-500'>Follow Us</p>
                             <div className='flex pl-2 '>
                                 <div className='w-6 h-6'>
                                     <BsFacebook className='w-6 h-6'/>
