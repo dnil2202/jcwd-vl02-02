@@ -75,8 +75,6 @@ const ProductDetail = () => {
 
     const printProductDetail = () => {
         return productDetail.map((val, idx) => {
-            let desc = val.description.split(' ')
-            let index = [0, 1, 2, 3]
             return (
                 <div key={val.idproduct}>
                     <Helmet>
@@ -102,7 +100,7 @@ const ProductDetail = () => {
                         <div className=' px-5 text-xs divide-y divide-[#F8F8F8] md:col-span-2 md:px-10'>
                             <div>
                                 <p className='font-Public text-txt-500 text-sm leading-5 font-bold '>{val.product_name}</p>
-                                <p className='text-xl text-txt-500 font-Public font-normal leading-7'>{index.map(e => desc[e])}</p>
+                                <p className='text-xl text-txt-500 font-Public font-normal leading-7'>{val.product_name}</p>
                                 <p className='text-2xl leading-7 font-bold bg-gradient-to-t from-[#000C36] via-[#2B4179] to-[#7987BC] bg-clip-text text-transparent font-Public'>Rp. {val.price.toLocaleString('ID')}</p>
                                 {/* <p className='font-Public text-txt-500'>Available Stock = {val.stock_unit}</p> */}
                             </div>
