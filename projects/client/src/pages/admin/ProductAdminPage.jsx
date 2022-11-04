@@ -10,6 +10,7 @@ import ModalDeleteProduct from "../../components/ModalDeleteProduct";
 import AdminComponent from "../../components/AdminComponent";
 import { useLocation, useNavigate } from "react-router";
 import { Helmet } from "react-helmet";
+import ModalSettingCategory from "../../components/ModalSettingCategory";
 
 const ProductAdminPage = (props) => {
     const navigate = useNavigate();
@@ -49,6 +50,9 @@ const ProductAdminPage = (props) => {
     const [productChecked, setProductChecked] = React.useState([]);
     const [allChecked, setAllChecked] = React.useState(false);
     const [totalChecked, setTotalChecked] = React.useState('');
+
+    // Add, edit, delete category
+    const [modalSetCategoryOn, setModalSetCategoryOn] = React.useState(false);
 
     const getProduct = () => {
         if (categoryChecked.length > 0) {
@@ -408,19 +412,16 @@ const ProductAdminPage = (props) => {
     }
 
     const printFilterCategory = () => {
-        if (categoryChecked.length > 1) {
-            return categoryChecked.map((val, idx) => {
-                return <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
-                    {category[val - 1].category_name}
-                    <AiFillCloseCircle onClick={() => { document.getElementById(`select-${val}`).checked = false; categoryChecked.splice(idx, 1); setLoading(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
-                </button>
+        return categoryChecked.map((val, idx) => {
+            return category.map((value, index) => {
+                if (val == value.idcategory) {
+                    return <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
+                        {value.category_name}
+                        <AiFillCloseCircle onClick={() => { document.getElementById(`select-${val}`).checked = false; categoryChecked.splice(idx, 1); setLoading(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
+                    </button>
+                }
             })
-        } else if (categoryChecked.length = 1) {
-            return <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
-                {category[categoryChecked - 1].category_name}
-                <AiFillCloseCircle onClick={() => { document.getElementById(`select-${categoryChecked}`).checked = false; setCategoryChecked([]); setTotalProductFilter('');; setLoading(false) }} size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
-            </button>
-        }
+        })
     }
 
     const onClose = (info) => {
@@ -528,7 +529,22 @@ const ProductAdminPage = (props) => {
                                         </div>
                                     </div>
 
-                                    <div id="button obat">
+                                    <div id="button obat" className="flex">
+                                        <div className="topnav mr-3" id="myTopnav">
+                                            <div className="dropdown">
+                                                <button className="dropbtn flex text-xs border rounded-lg pl-2 ml-3">
+                                                    Other Setting
+                                                    <IoIosArrowDown size={13} className="w-7 h-7 py-2 ml-3.5 rounded-r-lg bg-gray-200 text-sm hover:bg-gray-400 hover:text-white" />
+                                                </button>
+                                                <div className="dropdown-content w-20 pt-3 pb-3 mr-2">
+                                                    <ul className="py-1 text-sm text-gray-700" aria-labelledby="dropdownDefault">
+                                                        <li>
+                                                            <button onClick={() => { setModalSetCategoryOn(true) }} className="block pl-2 hover:bg-gray-100">Setting Category</button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <button type="button" onClick={() => navigate('/admin/product/add')} className="text-white bg-btn-500 hover:bg-btn-600 w-32 font-bold rounded-lg place-content-center text-xs h-7 mr-1 flex items-center">
                                             <BiDownload size={13} className="mr-2" />
                                             Add Medicine
@@ -679,6 +695,7 @@ const ProductAdminPage = (props) => {
 
                         {modalDetailProductOn && <ModalDetailProduct setModalDetailProductOn={setModalDetailProductOn} dataproduct={dataproduct} setLoading={setLoading} />}
                         {modalDeleteOn && <ModalDeleteProduct setModalDeleteOn={setModalDeleteOn} idproduct={idproduct} nameDeleted={nameDeleted} setLoading={setLoading} setAllChecked={setAllChecked} setProductChecked={setProductChecked} onClose={onClose} />}
+                        {modalSetCategoryOn && <ModalSettingCategory setModalSetCategoryOn={setModalSetCategoryOn} category={category} />}
                     </div>
                 </div>
             </div>

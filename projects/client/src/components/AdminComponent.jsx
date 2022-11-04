@@ -13,7 +13,7 @@ const AdminComponent = (page) => {
         <IoIosArrowBack size={30}
           className={`absolute -right-3 rounded-full cursor-pointer top-9 border-2 duration-300 bg-white  ${!open && "rotate-180"} ring-2 ring-teal-200`}
           onClick={() => setOpen(!open)} />
-        <div className='flex gap-x-3 items-center'>
+        <div className='flex gap-x-3 items-center' onClick={() => navigate('/admin/dashboard')}>
           <img src={logo} className={`h-10 rounded-full cursor-pointer duration-300 ${open && "rotate-[360deg]"}`} alt='medcare.com' />
           <span className={`cursor-pointer origin-center bg-gradient-to-r from-green-500 to-blue-600 text-2xl text-transparent font-extrabold bg-clip-text ${!open && "hidden"}`}>MedCare</span>
         </div>

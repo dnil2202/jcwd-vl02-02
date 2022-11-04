@@ -8,6 +8,7 @@ import { updateCart } from '../../action/useraction';
 import { AiFillCloseCircle } from "react-icons/ai";
 import { useDispatch, useSelector } from 'react-redux';
 import { Helmet } from "react-helmet";
+import { IoIosArrowDown } from "react-icons/io";
 
 const ProductPage = (props) => {
 
@@ -45,14 +46,6 @@ const ProductPage = (props) => {
 
     const getProduct = () => {
         let filter = '';
-        // let newID = '';
-
-        // if (search.includes('&')) {
-        //     let a = search.split('&');
-        //     let b = a[0].split('=');
-        //     newID = b[b.length - 1];
-        //     setIdPage(newID);
-        // }
 
         if (idPage && filterName) {
             filter = `category_id=${idPage}&product_name=${filterName}`
@@ -144,7 +137,7 @@ const ProductPage = (props) => {
                                                     progress: undefined,
                                                 });
                                             }
-                                        }}>Cart</button>
+                                        }}>Add to cart</button>
                                     : <button type="button" className="my-1 md:my-3 w-full text-btn-500 hover:text-white border
                                 border-btn-500 hover:bg-btn-500 font-bold rounded-lg text-sm py-1.5 text-center" onClick={() => {
                                             if (status !== 'Unverified') {
@@ -161,7 +154,7 @@ const ProductPage = (props) => {
                                                     progress: undefined,
                                                 });
                                             }
-                                        }}>Cart</button>
+                                        }}>Add to cart</button>
                             }
 
                         </div>
@@ -258,6 +251,14 @@ const ProductPage = (props) => {
                 </div>
             }
         })
+    }
+
+    const onSearch = (idelement) => {
+        setBoxFilterName(filterName);
+        setLoading(false);
+        document.getElementById(`${idelement}`).value = null;
+        navigate(`/product?${idPage ? `id=${idPage}&` : ``}search=${filterName}`);
+        setFilterNameOn(true);
     }
 
     // kemal add to cart APKG2-26
@@ -393,7 +394,7 @@ const ProductPage = (props) => {
 
     return (
         // <div>
-        <div className="mx-auto md:w-fit-navbarmd lg:w-fit-navbarlg xl:w-fit-navbarxl">
+        <div className="mx-auto md:w-fit-navbarmd lg:w-fit-navbarlg xl:w-fit-navbarxl 2xl:w-fit-navbar2xl">
             {/* <div style={{width:"1168px"}} className="mx-auto"> */}
             <Helmet>
                 <title>Medicine</title>
@@ -416,9 +417,7 @@ const ProductPage = (props) => {
                                     <div className="flex">
                                         <div className="relative w-full">
                                             <input id="searchsm" onChange={(e) => setFilterName(e.target.value)} type="search" className="block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-btn-500 focus:border-btn-500" placeholder="Example : Sanmol" required="" />
-                                            <button onClick={() => { setBoxFilterName(filterName); setLoading(false); document.getElementById("searchsm").value = null; navigate(`/product?${idPage ? `id=${idPage}&` : ``}search=${filterName}`); setFilterNameOn(true) }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300">
-                                                {/* <button onClick={() => { setLoading(false); document.getElementById("searchsm").value = null; navigate(`/product?search=${filterName}`); setFilterNameOn(true) }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300"> */}
-                                                {/* <button onClick={() => setLoading(false)} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300"> */}
+                                            <button onClick={() => { onSearch('searchsm') }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300">
                                                 <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                                 <span className="sr-only">Search</span>
                                             </button>
@@ -473,9 +472,7 @@ const ProductPage = (props) => {
                                     <div className="flex">
                                         <div className="relative w-full">
                                             <input id="search" onChange={(e) => setFilterName(e.target.value)} type="search" className="block w-52 p-2 text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-btn-500 focus:border-btn-500" placeholder="Example : Sanmol" required="" />
-                                            {/* <button onClick={() => {setLoading(false); navigate(`/product?search=${filterName}`); document.getElementById("search").value = null }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300"> */}
-
-                                            <button onClick={() => { setBoxFilterName(filterName); setLoading(false); document.getElementById("search").value = null; navigate(`/product?${idPage ? `id=${idPage}&` : ``}search=${filterName}`); setFilterNameOn(true) }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300">
+                                            <button onClick={() => { onSearch('search') }} type="button" className="absolute top-0 right-0 p-2 text-sm font-medium text-white bg-btn-500 rounded-r-lg border border-btn-600 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300">
                                                 <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                                 <span className="sr-only">Search</span>
                                             </button>
@@ -508,21 +505,42 @@ const ProductPage = (props) => {
                             </div>
                             {/* Desktop sort */}
                             {/* <div className="hidden md:flex justify-between items-center"> */}
-                            <div className="hidden xl:w-fit-productxl md:flex justify-between items-center">
+                            <div className="hidden 2xl:w-fit-product2xl xl:w-fit-productxl md:flex justify-between items-center">
                                 {/* <div className="hidden md:flex justify-between items-center" style={{width:"876px"}}> */}
                                 <p className="text-2xl font-bold mt-5 mb-3 text-txt-500">MEDICINE</p>
                                 {
                                     data.length > 0 ?
                                         <div className="flex items-center">
                                             <p className="text-sm text-cyan-900 mr-2">Sort: </p>
-                                            <button onClick={() => setDrop(!drop)} id="dropdownDefault" data-dropdown-toggle="dropdown" className="text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-4 h-8 mr-1 text-center inline-flex items-center" type="button">
+                                            <div className="topnav mr-3" id="myTopnav">
+                                                <div className="dropdown">
+                                                    <button className="dropbtn flex text-xs border rounded-lg pl-2">
+                                                        {defaultSort}
+                                                        <IoIosArrowDown size={13} className="w-7 h-7 py-2 ml-3.5 rounded-r-lg bg-gray-200 text-sm hover:bg-gray-400 hover:text-white" />
+                                                    </button>
+                                                    <div className="dropdown-content w-44 pt-3 pb-3 mr-2">
+                                                        <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefault">
+                                                            <li>
+                                                                <button onClick={() => { setLoading(false); setDefaultSort('Most Relevant'); setSort(''); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Most Relevant</button>
+                                                            </li>
+                                                            <li>
+                                                                <button onClick={() => { setLoading(false); setDefaultSort('Name : A - Z'); setSort('product_name'); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Name : A - Z</button>
+                                                            </li>
+                                                            <li>
+                                                                <button onClick={() => { setLoading(false); setDefaultSort('Lowest Price'); setSort('price'); setDrop(!drop) }} href="#" className="block py-2 pl-4 pr-12 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lowest Price</button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* <button onClick={() => setDrop(!drop)} id="dropdownDefault" data-dropdown-toggle="dropdown" className="text-white bg-btn-500 hover:bg-btn-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-xs px-4 h-8 mr-1 text-center inline-flex items-center" type="button">
                                                 {defaultSort}
                                                 <svg className="ml-2 w-4 h-4" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
                                                 </svg>
-                                            </button>
+                                            </button> */}
                                             {/* <!-- Dropdown menu --> */}
-                                            <div id="dropdown" className={`${drop == true ? 'hidden' : ''} z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700`} style={{ position: "absolute", inset: "185px auto auto 1124px" }}>
+                                            {/* <div id="dropdown" className={`${drop == true ? 'hidden' : ''} z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700`} style={{ position: "absolute", inset: "185px auto auto 1124px" }}>
                                                 <ul className="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefault">
                                                     <li>
                                                         <button onClick={() => { setLoading(false); setDefaultSort('Most Relevant'); setSort(''); setDrop(!drop) }} className="block py-2 pl-4 pr-16 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Most Relevant</button>
@@ -534,7 +552,7 @@ const ProductPage = (props) => {
                                                         <button onClick={() => { setLoading(false); setDefaultSort('Lowest Price'); setSort('price'); setDrop(!drop) }} href="#" className="block py-2 pl-4 pr-12 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Lowest Price</button>
                                                     </li>
                                                 </ul>
-                                            </div>
+                                            </div> */}
                                         </div>
                                         :
                                         <>
@@ -546,10 +564,6 @@ const ProductPage = (props) => {
                                     <>
                                         <div className="flex my-4">
                                             <button className="text-btn-500 font-bold text-sm mx-2" onClick={() => { onResetAllFilter(); setFilterNameOn(false) }}>Reset All Filter</button>
-                                            {/* <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
-                                    {defaultFilterCategory}
-                                    <AiFillCloseCircle size={15} className="w-8 h-8 py-2 ml-3.5 rounded-r-lg text-sm hover:bg-gray-400 hover:text-white" />
-                                </button> */}
                                             {
                                                 sort ?
                                                     <button className="flex text-xs items-center text-gray-500 border rounded-lg pl-2 ml-3">
@@ -580,12 +594,11 @@ const ProductPage = (props) => {
                             }
 
                             <hr className="hidden md:flex my-2 h-px bg-gray-200 border-0 dark:bg-gray-700" />
-                            {/* <hr className="hidden md:flex my-2 h-px bg-gray-200 border-0 dark:bg-gray-700" /> */}
 
                             {
                                 data.length > 0 ?
                                     // <div className="grid grid-cols-4 gap-2">
-                                    <div className="grid grid-cols-2 mr-4 md:mr-0 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-2">
+                                    <div className="grid grid-cols-2 mr-4 md:mr-0 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-2">
                                         {/* <div className="grid grid-cols-2 mr-4 md:mr-0 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 gap-2"> */}
                                         {printProduct()}
                                     </div>
@@ -596,9 +609,6 @@ const ProductPage = (props) => {
                                     </div>
                             }
 
-                            {/* <div className="grid grid-cols-2 mr-4 md:mr-0 xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 gap-2">
-                        {printProduct()}
-                    </div> */}
                             <div className="mx-auto">
                                 {
                                     data.length == 0 || data.length < query || data.length == totalProductFilter

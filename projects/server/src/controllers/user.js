@@ -88,14 +88,9 @@ module.exports = {
                 JOIN cart c ON u.iduser=c.user_id
                 JOIN product p ON p.idproduct = c.product_id WHERE c.user_id = ${dbConf.escape(loginUser[0].iduser)}`)
 
-          let addressUser = await dbQuery(`Select * from address a JOIN status s on a.status_id = s.idstatus where a.user_id=${dbConf.escape(loginUser[0].iduser)}`)
-
-          let transactionUser = await dbQuery(`Select * from transaction t where t.user_id=${dbConf.escape(loginUser[0].iduser)} `)
           res.status(200).send({
             ...loginUser[0],
             cart: cartUser,
-            address: addressUser,
-            transaction: transactionUser,
             token
           })
         } else {
@@ -132,16 +127,10 @@ module.exports = {
                     JOIN cart c ON u.iduser=c.user_id
                     JOIN product p ON p.idproduct = c.product_id WHERE c.user_id = ${dbConf.escape(resultUser[0].iduser)}`)
 
-        let addressUser = await dbQuery(`Select * from address a JOIN status s on a.status_id = s.idstatus where a.user_id=${dbConf.escape(resultUser[0].iduser)}`)
-
-        let transactionUser = await dbQuery(`Select * from transaction t where t.user_id=${dbConf.escape(resultUser[0].iduser)} `)
-
         let token = createToken({ ...resultUser[0] })
         res.status(200).send({
           ...resultUser[0],
           cart: cartUser,
-          address: addressUser,
-          transaction: transactionUser,
           token
         })
       }

@@ -17,11 +17,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import image2 from '../assets/undraw_conference_re_2yld.svg'
 import image3 from '../assets/undraw_shopping_app_flsj.svg'
-import { useParams,useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 
 const LandingPages = () => {
   const navigate = useNavigate()
   const loc = useLocation()
+  const [category, setCategory] = React.useState([]);
+
   const { email, status, iduser } = useSelector((state) => {
     return {
       email: state.userReducer.email,
@@ -29,46 +31,51 @@ const LandingPages = () => {
       iduser: state.userReducer.iduser
     }
   })
-  console.log(loc.search)
-  let dataCategory = [
+
+  const styleCategory = [
     {
-      id: 1,
       icon: GiMedicines,
-      name: 'Fever',
       fill: 'fill-purple-500'
     },
     {
-      id: 2,
       icon: GiChestnutLeaf,
-      name: 'Flu',
       fill: 'fill-red-500'
     },
     {
-      id: 5,
       icon: GiBeerBottle,
-      name: 'Eyes',
       fill: 'fill-green-500'
     },
     {
-      id: 7,
       icon: GiMedicines,
-      name: 'Hypertension',
       fill: 'fill-gray-500'
     },
     {
       id: 4,
       icon: GiGlassShot,
-      name: 'Vitamin',
       fill: 'fill-yellow-500'
     },
   ]
 
-  useEffect(()=>{
+  const getCategory = () => {
+    axios.get(API_URL + '/api/product/getcategory')
+      .then((res) => {
+        setCategory(res.data)
+      })
+      .catch((error) => {
+        console.log('getCategory error :', error)
+      })
+  }
+
+  React.useEffect(() => {
+    getCategory()
+  }, [category])
+
+  useEffect(() => {
     toastGoogleSigin()
-  },[])
+  }, [])
 
   const toastGoogleSigin = () => {
-    if(loc.search === '?_status=googlesucces'){
+    if (loc.search === '?_status=googlesucces') {
       toast.success('Register success cek your email ', {
         theme: "colored",
         position: "top-center",
@@ -78,9 +85,26 @@ const LandingPages = () => {
         pauseOnHover: true,
         draggable: false,
         progress: undefined,
-    })
+      })
     }
 
+  }
+
+  const printCategory = () => {
+    return category.map((val, idx) => {
+      return styleCategory.map((value, index) => {
+        if (idx < 5 && idx == index) {
+          return <div key={val.idcategory} onClick={() => navigate(`/product?id=${val.idcategory}`)}>
+            <div className=' min-w-[195px] max-h-[119px] bg-white shadow-md rounded-2xl'>
+              <div className='py-5 hover:-translate-y-2'>
+                <value.icon size={50} className={`mx-auto ${value.fill}`} />
+                <p className='text-center pt-4 text-blue-900 text-base font-bold'>{val.category_name}</p>
+              </div>
+            </div>
+          </div>
+        }
+      })
+    })
   }
 
   return (
@@ -140,18 +164,7 @@ const LandingPages = () => {
             </div>
             <div className='overflow-y-auto w-full'>
               <div className='flex justify-between mx-auto py-5' >
-                {
-                  dataCategory.map(data => (
-                    <div key={data.id} onClick={() => navigate(`/product?id=${data.id}`)}>
-                      <div className=' min-w-[195px] max-h-[119px] bg-white shadow-md rounded-2xl'>
-                        <div className='py-5 hover:-translate-y-2'>
-                          <data.icon size={50} className={`mx-auto ${data.fill}`} />
-                          <p className='text-center pt-4 text-blue-900 text-base font-bold'>{data.name}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                }
+                {printCategory()}
               </div>
             </div>
             <div className='grid md:grid-cols-2 gap-2 my-8 mx-auto'>

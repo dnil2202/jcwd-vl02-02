@@ -220,9 +220,6 @@ const EditProductPage = () => {
                                                                     <div>
                                                                         <label className="mt-4 mb-2 text-sm font-medium text-gray-900 flex">
                                                                             Main Unit
-                                                                            <button type="button" className="w-6 text-btn-500 rounded-md font-bold">
-                                                                                {<AiFillEdit size={13} className="mx-2" />}
-                                                                            </button>
                                                                         </label>
                                                                         <select className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-2'>
                                                                             <option placholder={'Pilih Unit Utama'}>Pilih Unit Utama</option>
@@ -283,9 +280,9 @@ const EditProductPage = () => {
 
                                                         {/* <!-- Modal content --> */}
                                                         <div className="py-5 text-center items-center">
-                                                            <h3 className="text-md font-bold text-gray-900">Anda belum memilih produk untuk diedit, silahkan kembali ke
+                                                            <h3 className="text-md font-bold text-gray-900">You don't choose any product to be edited, please go back to
                                                                 <button className="text-btn-500 ml-1" onClick={() => navigate('/admin/product')}>
-                                                                    menu daftar obat
+                                                                    product list page
                                                                 </button>
                                                             </h3>
                                                             {/* <input disabled defaultValue={nameDeleted} type="text" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Anjuran dosis penggunaan obat" required />
@@ -369,11 +366,11 @@ const EditProductPage = () => {
                                                                 <div>
                                                                     <label className="mt-4 mb-2 text-sm font-medium text-gray-900 flex">
                                                                         Main Unit
-                                                                        <button type="button" className="w-6 text-btn-500 rounded-md font-bold">
+                                                                        {/* <button type="button" className="w-6 text-btn-500 rounded-md font-bold">
                                                                             {<AiFillEdit onClick={() => { setModalAddMainUnitOn(true); setUnit_Type('main') }} size={13} className="mx-2" />}
-                                                                        </button>
+                                                                        </button> */}
                                                                     </label>
-                                                                    <select onChange={(e) => setDefault_Unit(e.target.value)} className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-2'>
+                                                                    <select onChange={(e) => setDefault_Unit(e.target.value)} disabled className='cursor-not-allowed bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-2'>
                                                                         <option defaultValue={state.dataproduct.default_unit}>{state.dataproduct.default_unit}</option>
                                                                         {printMain()}
                                                                     </select>
@@ -408,7 +405,7 @@ const EditProductPage = () => {
                                                         <label htmlFor="description" className="block mt-4 mb-2 text-sm font-medium text-gray-900">Product Image</label>
 
                                                         <div className="flex justify-center items-center w-full cursor-not-allowed">
-                                                            <label htmlFor="dropzone-file" className="cursor-not-allowed flex flex-col justify-center items-center w-full h-30 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                                            <label htmlFor="dropzone-file" className="cursor-not-allowed flex flex-col justify-center items-center w-full h-30 bg-gray-50 rounded-lg border-2 border-gray-200 border-opacity-80 border-dashed">
                                                                 <div className="flex">
                                                                     <img className="w-40 pt-1 mb-2" src={state.dataproduct.picture.includes('/imgProductPict') ? API_URL + state.dataproduct.picture : state.dataproduct.picture} alt={state.dataproduct.idproduct} />
                                                                     {/* <div className="flex flex-col justify-center items-center mx-2.5 py-6">

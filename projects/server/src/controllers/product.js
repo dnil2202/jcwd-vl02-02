@@ -16,7 +16,7 @@ module.exports = {
                 let totalProduct = results[0].totalProduct
 
                 if (filterCategory) {
-                    if (filterCategory[1]) {
+                    if (typeof filterCategory == typeof {}) {
 
                         let resultFilter = filterCategory.map((val, idx) => {
                             if (idx == 0) {
@@ -165,7 +165,7 @@ module.exports = {
         let image = `/imgProductPict/${req.files[0].filename}`;
         let { product_name, price, category_id, netto_stock, netto_unit, default_unit, description, dosis, aturan_pakai, stock_unit } = JSON.parse(req.body.data);
 
-        dbConf.query(`Select * from product where product_name=${dbConf.escape(product_name)}`,
+        dbConf.query(`Select * from product where product_name=${dbConf.escape(product_name)} and isDeleted="false"`,
             (err, result) => {
                 if (err) {
                     return res.status(500).send('Middlewear addProduct failed, error', err)
@@ -304,7 +304,7 @@ module.exports = {
         let unit_type = req.query.unit_type;
         let unit = req.body.unit;
 
-        dbConf.query(`Select * from unit where unit=${dbConf.escape(unit)} `,
+        dbConf.query(`Select * from unit where unit=${dbConf.escape(unit)} and unit_type=${dbConf.escape(unit_type)}`,
             (err, results) => {
                 if (err) {
                     return res.status(500).send('Middlewear getUnit failed. Error :', err)
@@ -405,9 +405,15 @@ module.exports = {
                 }
 
                 if (results.affectedRows) {
-                    res.status(200).send(
-                        {
-                            message: true
+                    dbConf.query(`Update product set isDeleted="true" where category_id=${dbConf.escape(idcategory)}`,
+                        (err, result) => {
+                            if (err) {
+                                return res.status(500).send(`Middlewear query delete gagal di update isDeleted : ${error}`)
+                            }
+                            res.status(200).send(
+                                {
+                                    message: true
+                                })
                         })
                 } else {
                     res.status(200).send(
@@ -523,7 +529,7 @@ module.exports = {
                     dbConf.query(`INSERT INTO history_stock (product_name, user_id, unit, quantity,date, type, information) VALUES
                     (${dbConf.escape(results[0].product_name)},${dbConf.escape(iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(results[0].stock_unit - stock_unit)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Manual Update','Pengurangan')`,
 
-                        // (${dbConf.escape(results[0].product_name)},${dbConf.escape(req.body.data.iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(results[0].stock_unit - req.body.data.stock_unit)},'Manual Update','Pengurangan')`,
+                        // (${dbConf.escape(results[0].product_name)},${dbConf.escape(req.body.data.iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(results[0].stock_unit - req.body.data.stock_unit)},'Manual Update','Decrement')`,
                         (error, results) => {
                             if (error) {
                                 return res.status(500).send(`Middlewear stockHistory failed, error : ${error}`)
@@ -549,9 +555,9 @@ module.exports = {
                         })
                 } else if (results[0].stock_unit < stock_unit) {
                     dbConf.query(`INSERT INTO history_stock (product_name, user_id, unit, quantity,date, type, information) VALUES
-                (${dbConf.escape(results[0].product_name)},${dbConf.escape(iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(stock_unit - results[0].stock_unit)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Manual Update','Penambahan');`,
+                (${dbConf.escape(results[0].product_name)},${dbConf.escape(iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(stock_unit - results[0].stock_unit)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Manual Update','Increment');`,
 
-                        // (${dbConf.escape(results[0].product_name)},${dbConf.escape(req.body.data.iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(req.body.data.stock_unit - results[0].stock_unit)},'Manual Update','Penambahan');`,
+                        // (${dbConf.escape(results[0].product_name)},${dbConf.escape(req.body.data.iduser)},${dbConf.escape(results[0].unit)},${dbConf.escape(req.body.data.stock_unit - results[0].stock_unit)},'Manual Update','Increment');`,
                         (error, results) => {
                             if (error) {
                                 return res.status(500).send(`Middlewear stockHistory failed, error : ${error}`)
@@ -603,14 +609,14 @@ module.exports = {
                 await dbQuery(`UPDATE stock SET stock_unit=${dbConf.escape(req.body.main)} WHERE product_id=${dbConf.escape(req.body.idproduct)} AND isDefault='true';`);
                 await dbQuery(`UPDATE stock SET stock_unit=${dbConf.escape(req.body.conv)} WHERE product_id=${dbConf.escape(req.body.idproduct)} AND isDefault='false';`);
                 await dbQuery(`INSERT INTO history_stock (product_name, user_id,unit,quantity,date, type,information) VALUES
-                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.mainUnit)},${dbConf.escape(req.body.change_main)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Pengurangan'),
-                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.convUnit)},${dbConf.escape(req.body.change_conv)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Penambahan');`)
+                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.mainUnit)},${dbConf.escape(req.body.change_main)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Decrement'),
+                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.convUnit)},${dbConf.escape(req.body.change_conv)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Increment');`)
             } else {
                 await dbQuery(`UPDATE stock SET stock_unit=${dbConf.escape(req.body.main)} WHERE product_id=${dbConf.escape(req.body.idproduct)} AND isDefault='true';`);
                 await dbQuery(`insert into stock (stock_unit,unit,isDefault,product_id) values (${dbConf.escape(req.body.conv)},${dbConf.escape(req.body.convUnit)},'false',${dbConf.escape(req.body.idproduct)});`);
                 await dbQuery(`INSERT INTO history_stock (product_name, user_id,unit,quantity,date, type,information) VALUES
-                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.mainUnit)},${dbConf.escape(req.body.change_main)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Pengurangan'),
-                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.convUnit)},${dbConf.escape(req.body.conv)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Penambahan');`)
+                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.mainUnit)},${dbConf.escape(req.body.change_main)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Decrement'),
+                (${dbConf.escape(req.body.name)},${dbConf.escape(req.body.iduser)},${dbConf.escape(req.body.convUnit)},${dbConf.escape(req.body.conv)},'${new Date().toLocaleDateString('en-CA')} ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}','Unit Conversion','Increment');`)
             }
             res.status(200).send({
                 success: true,

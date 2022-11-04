@@ -8,15 +8,17 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily:{
-        'Public':['Public Sans', 'sans-serif',defaultTheme.fontFamily.Public]
+      fontFamily: {
+        'Public': ['Public Sans', 'sans-serif', defaultTheme.fontFamily.Public]
       },
       width: {
         'fit-navbarmd': '656px',
         'fit-navbarlg': '912px',
         'fit-navbarxl': '1168px',
-        'fit-productmd':'620px',
-        'fit-productxl':'876px'
+        'fit-navbar2xl': '1424px',
+        'fit-productmd': '620px',
+        'fit-productxl': '876px',
+        'fit-product2xl': '1132px',
       }
     },
     colors: {

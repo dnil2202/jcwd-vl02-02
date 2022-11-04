@@ -254,7 +254,7 @@ const DashboardPage = (props) => {
                                         <p className="sm:text-xl text-sm font-semibold sm:mt-5 mt-2 sm:mb-3 px-5">In Delivery</p>
                                         <p className="sm:text-4xl text-sm font-bold sm:mt-3 sm:mb-3 pl-5">{transaction[2]}</p>
                                     </div>
-                                    <div className='border shadow-lg h-16 sm:h-40 bg-gray-100 rounded-lg my-2 mx-2 sm:mx-5 cursor-pointer' type='button' onClick={() => navigate('/admin/transaction?status=completed')}>
+                                    <div className='border shadow-lg h-16 sm:h-40 bg-gray-100 rounded-lg my-2 mx-2 sm:mx-5 cursor-pointer' type='button' onClick={() => navigate('/admin/transaction?status=finished')}>
                                         <p className="sm:text-xl text-sm font-semibold sm:mt-5 mt-2 sm:mb-3 px-5">Order Completed</p>
                                         <p className="sm:text-4xl text-sm font-bold sm:mt-3 sm:mb-3 pl-5">{transaction[3]}</p>
                                     </div>
