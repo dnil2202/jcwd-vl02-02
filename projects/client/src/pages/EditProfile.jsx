@@ -62,7 +62,7 @@ const EditProfile = () => {
 
     const updateProfile = ()=>{
         setLoading(true)
-        if(input.fullname.length > 0 && input.username.length > 0 && input.email.length>0 && input.phone_number !== 'undefined' && input.birthdate.length>0){
+        if(input.fullname.length > 0 && input.username.length > 0 && input.email.length>0 && input.phone_number !== 'undefined' && input.birthdate.length>0 &&input.email.includes('@') && input.email.includes('.com')){
 
             let medcarelog = localStorage.getItem('medcarelog')
             let formData = new FormData()
@@ -128,7 +128,7 @@ const EditProfile = () => {
                     })
                 })
         }else{
-            toast.error(`${'data cannot be empty'}`, {
+            toast.error(`${'Wrong input format'}`, {
                 theme: "colored",
                 position: "top-center",
                 autoClose: 2000,

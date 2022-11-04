@@ -326,7 +326,7 @@ module.exports = {
     } catch (error) {
       console.log(error)
       res.status(500).send({
-        message: 'Error query sql'
+        message: 'Error'
       })
     }
   },

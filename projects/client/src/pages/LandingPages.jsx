@@ -187,7 +187,7 @@ const LandingPages = () => {
             </div>
           </div>
           <div className='mb-8 mt-4 '>
-            <p className='text-sm font-bold text-blue-800 font-Public'>Guarantee For You</p>
+            <p className='text-sm font-bold text-txt-500 font-Public'>Guarantee For You</p>
           </div>
           <div className='my-2'>
             <div className='grid gap-2 lg:grid-cols-3'>
