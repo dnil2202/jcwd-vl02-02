@@ -26,9 +26,10 @@ const ProductDetail = () => {
     const [productDetail, setProductDetail] = React.useState([]);
     const [userCartData, setUserCartData] = React.useState([]);
 
-    const { status } = useSelector((state) => {
+    const { status,role } = useSelector((state) => {
         return {
-            status: state.userReducer.status_name
+            status: state.userReducer.status_name,
+            role: state.userReducer.role,
         }
     })
     console.log(search)
@@ -157,6 +158,18 @@ const ProductDetail = () => {
                                         }, 2000)
                                     } else if (status === 'Unverified') {
                                         toast.info('Verified your account first!', {
+                                            theme: "colored",
+                                            position: "top-center",
+                                            autoClose: 2000,
+                                            hideProgressBar: false,
+                                            closeOnClick: true,
+                                            pauseOnHover: true,
+                                            draggable: false,
+                                            progress: undefined,
+                                        });
+                                    }
+                                    if(role === 'Admin'){
+                                        toast.info("Admin can't checkout", {
                                             theme: "colored",
                                             position: "top-center",
                                             autoClose: 2000,

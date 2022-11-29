@@ -91,7 +91,6 @@ function App() {
             <Route path='/change-pass' element={<ChangePassword/>} />
             <Route path='/address' element={<AddressComponent/>} />
             <Route path='/:user/transaction' element={<UserOrderList />} />
-
           </Route>
           
           {/* Protect Route Page Admin */}

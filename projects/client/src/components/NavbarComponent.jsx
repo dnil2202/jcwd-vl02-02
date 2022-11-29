@@ -27,7 +27,6 @@ const NavbarComponent = (props) => {
     }
   })
 
-
   let { username, role, profile_pic } = useSelector((state) => {
     return {
       username: state.userReducer.username,
@@ -52,10 +51,10 @@ const NavbarComponent = (props) => {
   // Update Verification
 
   const resendVerif = async () => {
+    setDisable(true)
     try {
       await axios.get(`${API_URL}/api/user/resend-verif?email=${email}`)
         .then((res) => {
-          setDisable(true)
           toast.success('Please check your email', {
             theme: "colored",
             position: "top-center",

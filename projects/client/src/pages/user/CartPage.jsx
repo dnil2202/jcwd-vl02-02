@@ -11,6 +11,7 @@ import { updateCart } from '../../action/useraction';
 import LoadingComponent from '../../components/Loading';
 import nodata from '../../assets/nodata.png';
 import { Helmet } from 'react-helmet';
+import { useSelector } from 'react-redux';
 
 const UserCart = (props) => {
 
@@ -23,6 +24,13 @@ const UserCart = (props) => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const {role}=useSelector((state)=>{
+        return{
+            role:state.userReducer.role
+        }
+    })
+
 
     React.useEffect(() => {
         getCartData();
@@ -274,16 +282,40 @@ const UserCart = (props) => {
     };
 
     const onCheckout = () => {
-        let selected = [];
-        cartData.forEach((val, idx) => {
-            if (val.selected === 'true') {
-                selected.push(val)
+        if(role === 'User'){
+            let selected = [];
+            cartData.forEach((val, idx) => {
+                if (val.selected === 'true') {
+                    selected.push(val)
+                }
+            })
+            //console.log(selected, totalPrice);
+    
+            if (selected.length === 0 || totalPrice === 0) {
+                toast.error('You have not choose any product!', {
+                    theme: "colored",
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                });
+            } else {
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                    let state = {
+                        selected,
+                        totalPrice
+                    }
+                    navigate('/checkout', { state })
+                }, 1000)
             }
-        })
-        //console.log(selected, totalPrice);
-
-        if (selected.length === 0 || totalPrice === 0) {
-            toast.error('You have not choose any product!', {
+        }else{
+            navigate('/admin/dashboard')
+            toast.info("Admin can't checkout", {
                 theme: "colored",
                 position: "top-center",
                 autoClose: 2000,
@@ -293,17 +325,8 @@ const UserCart = (props) => {
                 draggable: false,
                 progress: undefined,
             });
-        } else {
-            setLoading(true);
-            setTimeout(() => {
-                setLoading(false);
-                let state = {
-                    selected,
-                    totalPrice
-                }
-                navigate('/checkout', { state })
-            }, 1000)
         }
+
     };
 
     return (

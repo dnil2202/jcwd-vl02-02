@@ -29,6 +29,7 @@ const FooterComponent = () => {
         },
     ]
 
+
 return (
     <div>
         <div className='bg-gray-300 py-5 lg:hidden'>
@@ -119,7 +120,7 @@ return (
                     </div>
                 </div>
                 <div className='bg-[#4F618E] mt-5'>
-                    <p className='text-white text-xs text-center py-5'>@MedCare2022</p>
+                    <p className='text-white text-xs text-center py-5'>@MedCare{new Date().getFullYear()}</p>
                 </div>
             </div>
         </div>

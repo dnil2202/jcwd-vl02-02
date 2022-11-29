@@ -142,7 +142,6 @@ const Login = () => {
                       <p className='text-red-600 text-center leading-7'>{message}</p>
                     </div>
                     <button className='text-white rounded-md bg-main-500 hover:bg-main-600 w-full py-2 mt-5 font-Public' onClick={onLogin}>Login</button>
-
                 </div>
               </div>
             </div>

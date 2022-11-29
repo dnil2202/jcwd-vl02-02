@@ -440,7 +440,12 @@ module.exports = {
       let loginUser = await dbQuery(`Select u.iduser, u.fullname, u.username, u.email, u.role, u.phone_number, u.gender, u.birthdate, u.profile_pic, u.status_id, s.status_name from user u JOIN status s on u.status_id=s.idstatus WHERE u.email = ${dbConf.escape(req.user.emails[0].value) }`)
       if(loginUser.length > 0){
         let token = createToken ({...loginUser[0]})
-        res.redirect(process.env.FE_URL+`/login?_t=${token}`)
+        if(loginUser[0].status_name === 'Verified'){
+          res.redirect(process.env.FE_URL+`/login?_t=${token}`)
+        }else{
+          await dbQuery(`UPDATE user set token=${dbConf.escape(token)} WHERE iduser=${dbConf.escape(loginUser[0].iduser)}`)
+          res.redirect(process.env.FE_URL+`/login?_t=${token}`)
+        }
       } 
     }else{
       let register = await dbQuery(`INSERT INTO user (fullname,username, email, phone_number, password)values(${dbConf.escape(req.user.displayName)}, ${dbConf.escape(req.user.name.givenName)}, ${dbConf.escape(req.user.emails[0].value)}, +62 ,${dbConf.escape(hashPassword(req.user.id))})`)
